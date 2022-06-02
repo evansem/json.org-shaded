@@ -17,8 +17,8 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20200518</version>
-<!--            20220320-->
+            <version>20180813</version>
+<!--Recent version without vulnerabilities in test dependencies 20220320-->
         </dependency>
     </dependencies>
 
