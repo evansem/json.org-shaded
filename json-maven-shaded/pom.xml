@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20220320</version>
+            <version>20180813</version>
         </dependency>
     </dependencies>
 
@@ -41,6 +41,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+<!--                            <shadeSourcesContent>true</shadeSourcesContent>-->
                             <relocations>
                                 <relocation>
                                     <pattern>org.json</pattern>

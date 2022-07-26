@@ -68,7 +68,6 @@ public class JSONPointer {
         /**
          * Creates a {@code JSONPointer} instance using the tokens previously set using the
          * {@link #append(String)} method calls.
-         * @return a JSONPointer object
          */
         public JSONPointer build() {
             return new JSONPointer(this.refTokens);
@@ -187,11 +186,10 @@ public class JSONPointer {
         this.refTokens = new ArrayList<String>(refTokens);
     }
 
-    /**
-     * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
-     */
-    private static String unescape(String token) {
-        return token.replace("~1", "/").replace("~0", "~");
+    private String unescape(String token) {
+        return token.replace("~1", "/").replace("~0", "~")
+                .replace("\\\"", "\"")
+                .replace("\\\\", "\\");
     }
 
     /**
@@ -230,13 +228,13 @@ public class JSONPointer {
      * @return the matched object. If no matching item is found a
      * @throws JSONPointerException is thrown if the index is out of bounds
      */
-    private static Object readByIndexToken(Object current, String indexToken) throws JSONPointerException {
+    private Object readByIndexToken(Object current, String indexToken) throws JSONPointerException {
         try {
             int index = Integer.parseInt(indexToken);
             JSONArray currentArr = (JSONArray) current;
             if (index >= currentArr.length()) {
-                throw new JSONPointerException(format("index %s is out of bounds - the array has %d elements", indexToken,
-                        Integer.valueOf(currentArr.length())));
+                throw new JSONPointerException(format("index %d is out of bounds - the array has %d elements", index,
+                        currentArr.length()));
             }
             try {
 				return currentArr.get(index);
@@ -264,21 +262,21 @@ public class JSONPointer {
     /**
      * Escapes path segment values to an unambiguous form.
      * The escape char to be inserted is '~'. The chars to be escaped 
-     * are ~, which maps to ~0, and /, which maps to ~1.
+     * are ~, which maps to ~0, and /, which maps to ~1. Backslashes
+     * and double quote chars are also escaped.
      * @param token the JSONPointer segment value to be escaped
      * @return the escaped value for the token
-     * 
-     * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
-    private static String escape(String token) {
+    private String escape(String token) {
         return token.replace("~", "~0")
-                .replace("/", "~1");
+                .replace("/", "~1")
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
     }
 
     /**
      * Returns a string representing the JSONPointer path value using URI
      * fragment identifier representation
-     * @return a uri fragment string
      */
     public String toURIFragment() {
         try {

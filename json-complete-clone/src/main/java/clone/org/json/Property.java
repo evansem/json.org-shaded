@@ -37,9 +37,9 @@ public class Property {
      * Converts a property file object into a JSONObject. The property file object is a table of name value pairs.
      * @param properties java.util.Properties
      * @return JSONObject
-     * @throws JSONException if a called function has an error
+     * @throws JSONException
      */
-    public static JSONObject toJSONObject(java.util.Properties properties) throws JSONException {
+    public static JSONObject toJSONObject(Properties properties) throws JSONException {
         // can't use the new constructor for Android support
         // JSONObject jo = new JSONObject(properties == null ? 0 : properties.size());
         JSONObject jo = new JSONObject();
@@ -57,7 +57,7 @@ public class Property {
      * Converts the JSONObject into a property file object.
      * @param jo JSONObject
      * @return java.util.Properties
-     * @throws JSONException if a called function has an error
+     * @throws JSONException
      */
     public static Properties toProperties(JSONObject jo)  throws JSONException {
         Properties  properties = new Properties();

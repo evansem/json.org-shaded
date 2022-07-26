@@ -1,6 +1,7 @@
 package clone.org.json;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -93,7 +94,6 @@ public class JSONWriter {
 
     /**
      * Make a fresh JSONWriter. It can be used to build one JSON text.
-     * @param w an appendable object
      */
     public JSONWriter(Appendable w) {
         this.comma = false;
@@ -326,27 +326,31 @@ public class JSONWriter {
             return "null";
         }
         if (value instanceof JSONString) {
-            String object;
+            Object object;
             try {
                 object = ((JSONString) value).toJSONString();
             } catch (Exception e) {
                 throw new JSONException(e);
             }
-            if (object != null) {
-                return object;
+            if (object instanceof String) {
+                return (String) object;
             }
             throw new JSONException("Bad value from toJSONString: " + object);
         }
         if (value instanceof Number) {
             // not all Numbers may match actual JSON Numbers. i.e. Fractions or Complex
             final String numberAsString = JSONObject.numberToString((Number) value);
-            if(JSONObject.NUMBER_PATTERN.matcher(numberAsString).matches()) {
+            try {
+                // Use the BigDecimal constructor for it's parser to validate the format.
+                @SuppressWarnings("unused")
+                BigDecimal unused = new BigDecimal(numberAsString);
                 // Close enough to a JSON number that we will return it unquoted
                 return numberAsString;
+            } catch (NumberFormatException ex){
+                // The Number value is not a valid JSON number.
+                // Instead we will quote it as a string
+                return JSONObject.quote(numberAsString);
             }
-            // The Number value is not a valid JSON number.
-            // Instead we will quote it as a string
-            return JSONObject.quote(numberAsString);
         }
         if (value instanceof Boolean || value instanceof JSONObject
                 || value instanceof JSONArray) {
@@ -374,7 +378,7 @@ public class JSONWriter {
      * <code>false</code>.
      * @param b A boolean.
      * @return this
-     * @throws JSONException if a called function has an error
+     * @throws JSONException
      */
     public JSONWriter value(boolean b) throws JSONException {
         return this.append(b ? "true" : "false");
@@ -394,7 +398,7 @@ public class JSONWriter {
      * Append a long value.
      * @param l A long.
      * @return this
-     * @throws JSONException if a called function has an error
+     * @throws JSONException
      */
     public JSONWriter value(long l) throws JSONException {
         return this.append(Long.toString(l));

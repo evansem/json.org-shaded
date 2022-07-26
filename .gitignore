@@ -8,3 +8,5 @@ target/
 json-20220320-sources.jar
 
 json-maven-shaded/dependency-reduced-pom.xml
+
+extracted/
